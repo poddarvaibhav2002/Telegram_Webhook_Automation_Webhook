@@ -1,0 +1,195 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "On clicking 'execute'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "10ba8558-bf93-4d45-86fe-782c683c0165",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 8
+            }
+          ]
+        }
+      },
+      "name": "Cron",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        0,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "c59de26d-0ab1-4ce2-8a29-3213e6b97638"
+    },
+    {
+      "parameters": {
+        "chatId": "-657820242",
+        "text": "LIMPOU PACOTES TRANSPORTE-RECEBIDO PONTO MIX",
+        "additionalFields": {}
+      },
+      "name": "Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        560,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "9314f853-bfd6-4c91-82f6-c24c455d9ca3",
+      "webhookId": "e0ed2ce9-6056-4e00-baf2-203e0497f107"
+    },
+    {
+      "parameters": {
+        "chatId": "-657820242",
+        "text": "LIMPOU PACOTES TRANSPORTE-RECEBIDO OBJETIVA",
+        "additionalFields": {}
+      },
+      "name": "Telegram1",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        560,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "f2ec4b48-2152-4548-bcfd-62e5d2d539b5",
+      "webhookId": "27567191-0eea-44ff-9864-d5db67964a3a"
+    },
+    {
+      "parameters": {
+        "path": "limparPacotes",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        0,
+        352
+      ],
+      "webhookId": "7ecb2d2f-5a09-44a5-a7bc-27f188c74e0b",
+      "typeVersion": 1,
+      "id": "e35f3487-c2c5-4483-b75d-48ab349dc65c"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- LIMPAR ETIQUETAS ANTIGAS \nwith t as (\nselect token from i_objeto where modulo = 'pacoteProduto' and situacao = 'TRANSPORTE-RECEBIDO' and data <= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)\n)\nupdate i_objeto \nset modulo = 'DELETE'\nwhere modulo = 'pacoteProduto' and token in (select token from t)"
+      },
+      "name": "limparPacoteCliente1",
+      "type": "n8n-nodes-base.mySql",
+      "position": [
+        320,
+        336
+      ],
+      "typeVersion": 1,
+      "id": "55354602-9262-4f0e-a52a-80b657fa3a73"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- LIMPAR ETIQUETAS ANTIGAS \nwith t as (\nselect token from i_objeto where modulo = 'pacoteProduto' and situacao = 'TRANSPORTE-RECEBIDO' and data <= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)\n)\nupdate i_objeto \nset modulo = 'DELETE'\nwhere modulo = 'pacoteProduto' and token in (select token from t)"
+      },
+      "name": "limpaPacoteCliente0",
+      "type": "n8n-nodes-base.mySql",
+      "position": [
+        320,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "177d9812-1223-4624-96b5-252bd0875ad8"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Cron": {
+      "main": [
+        [
+          {
+            "node": "limpaPacoteCliente0",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "limparPacoteCliente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "limpaPacoteCliente0",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "limparPacoteCliente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "limpaPacoteCliente0": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "limparPacoteCliente1": {
+      "main": [
+        [
+          {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On clicking 'execute'": {
+      "main": [
+        [
+          {
+            "node": "limpaPacoteCliente0",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "limparPacoteCliente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e0495ba4-7529-47f8-a307-bc53e944e34d",
+  "meta": {
+    "instanceId": "e59703ce9c8410876b2d0cc67221fad6b33a0e6fb1463f83da70e6d33731a852"
+  },
+  "id": "h7BCsuj2m41TMEPK",
+  "tags": []
+}
